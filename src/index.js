@@ -11,6 +11,23 @@ function putMessages(ul) {
     })
   }
 
+
+function showChats(div) {
+  fetch("http://localhost:3000/api/v1/chat_rooms")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(e => {
+        let chatsButton = document.createElement("button")
+        let br = document.createElement("br")
+        chatsButton.innerText = e.subject
+        chatsButton.dataset.id = e.id
+        chatsButton.className = "chat-button"
+        div.append(chatsButton)
+        div.append(br)
+      })
+    })
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const messageUl = document.getElementById("message-ul")
@@ -20,17 +37,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const main = document.getElementById("test")
   const textInput = document.getElementById("text-container")
   const textBox = document.getElementById("text-box")
+  const functionalPage = document.getElementById("functional-page")
+  const chatsDiv = document.getElementById("chats-div")
+  let currentUser;
   let userId;
   let userName;
   let userLanguage;
-  let currentUser;
+  let currentChat;
+  let currentChatMessages;
+
 
   loginForm.addEventListener("submit", e => {
     e.preventDefault();
     //userName = e.target.user.value
     loginContainer.style.display = "none"
-    main.hidden = false
-    textInput.style.display = "block"
+    functionalPage.style.display = "block"
     // console.log(userName)
     fetch("http://localhost:3000/api/v1/users")
       .then(res => res.json())
@@ -60,18 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       loginContainer.style.display = "none";
-      main.hidden = false;
-      textInput.style.display = "block"
+      functionalPage.style.display = "block";
       console.log(userName)
       currentUser = data
       userName = currentUser.name
       userId = currentUser.id
       userLanguage = currentUser.language
-      debugger
     })
   })
 
-  putMessages(messageUl)
+  // putMessages(messageUl)
 
   textBox.addEventListener("submit", e => {
     e.preventDefault()
@@ -91,5 +110,34 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   })
 
+  showChats(chatsDiv)
 
+
+//this is a fucked up method... click on the button to see what it does
+//i will explain tomorrow
+  chatsDiv.addEventListener("click", e => {
+    if (e.target.className === "chat-button") {
+      let messageDisplay = document.getElementById("message-display")
+      while (messageDisplay.firstChild) {
+        messageDisplay.removeChild(messageDisplay.firstChild)
+      }
+      let chatButtonId = parseInt(e.target.dataset.id)
+      fetch("http://localhost:3000/api/v1/chat_rooms")
+        .then(res => res.json())
+        .then(data => {
+          currentChat = data.filter( el => el.id === chatButtonId);
+          currentChat = currentChat[0]
+          currentChatMessages = currentChat.messages
+          currentChatMessages.forEach(e => {
+            let thisChatDiv = document.createElement("div")
+            let thisChatUl = document.createElement("ul")
+            let thisChatLi = document.createElement("li")
+            thisChatLi.innerText = e.text
+            thisChatUl.append(thisChatLi)
+            thisChatDiv.append(thisChatUl)
+            messageDisplay.append(thisChatDiv)
+          })
+        })
+      }
+    })
 })
