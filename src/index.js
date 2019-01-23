@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageUl = document.getElementById("message-ul")
   const loginForm = document.getElementById("login-form")
   const signupForm = document.getElementById("signup-form")
+  
 
   loginForm.addEventListener("submit", e => {
     e.preventDefault();
