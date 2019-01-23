@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>Test</title>
+    <link rel="stylesheet" href="index.css">
     <script src="./src/index.js"></script>
   </head>
   <body>
+
     <div id="login-container" style="display:block">
       <h1>Welcome to Chat Buddy!</h1>
-
 
         <h3>Sign Up!</h3>
         <form id="signup-form">
@@ -19,22 +20,20 @@
           <input type="submit" name="" value="Go">
         </form>
 
-
         <h3>Log In!</h3>
         <form id="login-form">
           <input type="text" name="user" placeholder="Log In">
           <br>
           <input type="submit" name="" value="Go">
         </form>
-
     </div>
-    <div id="test" class="main" hidden="true">
+
+    <div id="chats-bar" class="main" hidden="true">
       <h1> Chat Buddy </h1>
-      <div id="message-container">
-        <ul id="message-ul">
-
-        </ul>
-      </div>
+      <h2>Chats</h2>
+      <ul id="message-ul">
+      </ul>
     </div>
+
   </body>
 </html>

@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form")
 
   const loginContainer = document.getElementById("login-container")
-  const main = document.getElementById("test")
+  const chatsBar = document.getElementById("chats-bar")
   let userName;
 
 
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     userName = e.target.user.value
     loginContainer.style.display = "none"
-    main.hidden = false
+    chatsBar.hidden = false
     console.log(userName);
   })
 
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(() => {
       loginContainer.style.display = "none";
-      main.hidden = false;
+      chatsBar.hidden = false;
     })
   })
 
