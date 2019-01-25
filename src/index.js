@@ -43,15 +43,17 @@ document.addEventListener("DOMContentLoaded", () => {
   chatWebSocket.onopen = (event) => {
    const subscribeMsg = {
      "command": "subscribe",
-     "identifier": "{\"channel\":\"MessagesController\"}"
+     "identifier": "{\"channel\":\"MessagesChannel\", \"chat_room_id\": 5}"
+     }
+     chatWebSocket.send(JSON.stringify(subscribeMsg))
    }
-   chatWebSocket.send(JSON.stringify(subscribeMsg))
-  }
+
 
   chatWebSocket.onmessage = event => {
     const result = JSON.parse(event.data)
-    if(typeof result.message === "object") {
-      showMessages(result.message, chatsDiv)
+    if(result.message && result.message.text) {
+      console.log(result.message.text)
+      // showMessages(result.text, chatsDiv)
     }
   }
 
