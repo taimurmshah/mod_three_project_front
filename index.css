@@ -17,3 +17,65 @@
   color: #818181;
   display: block;
 }
+
+#message-display {
+
+  height: 550px;
+  width: 500px;
+  border: 3px solid #73AD21;
+  position: absolute;
+  background-color: ghostwhite;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#text-box {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+#text-box button {
+  width: 10%;
+  /* height: 80%; */
+}
+
+.message-text {
+  width: 90%;
+}
+
+#message-header {
+  height: 50px;
+  color: white;
+  margin-top: 0px;
+  background: #666;
+  position: relative;
+  overflow: hidden;
+}
+
+.message-li {
+  list-style: none;
+  display: flex;
+}
+
+.self {
+  justify-content: flex-end;
+  align-items: flex-end;
+
+}
+
+.message-container {
+/* display: inline-block; */
+border: 2px solid #dedede;
+background-color: #f1f1f1;
+border-radius: 5px;
+padding: 10px;
+margin: 10px 0;
+}
+
+.me {
+border-color: #ccc;
+background-color: #ddd;
+}
