@@ -1,34 +1,23 @@
-function putMessages(ul) {
-  fetch("http://localhost:3000/api/v1/messages")
+function showMessages(message, div) {
+  let chatsButton = document.createElement("button")
+  let br = document.createElement("br")
+  chatsButton.innerText = message.subject
+  chatsButton.dataset.id = message.id
+  chatsButton.className = "chat-button"
+  div.append(chatsButton)
+  div.append(br)
+}
+
+function fetchMessages(div) {
+  fetch("http://localhost:3000/api/v1/chat_rooms")
     .then(res => res.json())
     .then(data => {
-      data.forEach(e => {
-        let messageLi = document.createElement("li")
-        messageLi.innerText = `${e.text}   -${e.user.name}`
-        ul.append(messageLi)
-      })
+      data.forEach(e => showMessages(e, div))
     })
   }
 
 
-function showChats(div) {
-  fetch("http://localhost:3000/api/v1/chat_rooms")
-    .then(res => res.json())
-    .then(data => {
-      data.forEach(e => {
-        let chatsButton = document.createElement("button")
-        let br = document.createElement("br")
-        chatsButton.innerText = e.subject
-        chatsButton.dataset.id = e.id
-        chatsButton.className = "chat-button"
-        div.append(chatsButton)
-        div.append(br)
-      })
-    })
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-
   const messageUl = document.getElementById("message-ul")
   const loginForm = document.getElementById("login-form")
   const signupForm = document.getElementById("signup-form")
@@ -45,6 +34,28 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentChat;
   let currentChatMessages;
 
+  function openConnection() {
+    return new WebSocket("ws://localhost:3000/cable")
+  }
+
+  const chatWebSocket = openConnection()
+
+  chatWebSocket.onopen = (event) => {
+   const subscribeMsg = {
+     "command": "subscribe",
+     "identifier": "{\"channel\":\"MessagesController\"}"
+   }
+   chatWebSocket.send(JSON.stringify(subscribeMsg))
+  }
+
+  chatWebSocket.onmessage = event => {
+    const result = JSON.parse(event.data)
+    if(typeof result.message === "object") {
+      showMessages(result.message, chatsDiv)
+    }
+  }
+
+  fetchMessages(chatsDiv)
 
   loginForm.addEventListener("submit", e => {
     e.preventDefault();
@@ -88,37 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // putMessages(messageUl)
-
-  // textBox.addEventListener("submit", e => {
-  //   e.preventDefault()
-  //   let text = e.target.content.value
-  //   fetch("http://localhost:3000/api/v1/messages", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "Accept": "application/json"
-  //      },
-  //     body: JSON.stringify({
-  //       text, user_id: userId, chat_room_id: 6
-  //     })
-  //   }).then(res => res.json())
-  //     .then(data => {
-  //       console.log(data)
-  //     })
-  // })
-
-  showChats(chatsDiv)
-
-
-//this is a fucked up method... click on the button to see what it does
-//i will explain tomorrow
   chatsDiv.addEventListener("click", e => {
     if (e.target.className === "chat-button") {
-      // let messageDisplay = document.getElementById("message-display")
-      // while (messageDisplay.firstChild) {
-      //   messageDisplay.removeChild(messageDisplay.firstChild)
-      // }
       let chatButtonId = parseInt(e.target.dataset.id)
       fetch("http://localhost:3000/api/v1/chat_rooms")
         .then(res => res.json())
@@ -133,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
           let messageHeader = document.createElement('h1')
           textBox = document.createElement('form');
           textBox.id = 'text-box';
-          textBox.innerHTML = '<textarea class="message-text" placeholder="Type message.." name="msg"></textarea><button type="submit" class="btn">Send</button>'
+          textBox.innerHTML = '<textarea class="message-text" placeholder="Type message.." name="msg"></textarea><button id="msg-submit" type="submit" class="btn">Send</button>'
           messageDisplay.append(textBox)
           messageHeader.innerText = `${e.target.innerText} chat`
           messageHeader.id = "message-header"
@@ -152,8 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
               thisChatLi.classList =  thisChatLi.classList + " self";
             }
             thisChatP.innerText = e.text
-            // thisChatLi.append(thisChatP)
-            // thisChatUl.append(thisChatLi)
             thisChatDiv.append(thisChatP)
             thisChatLi.append(thisChatDiv)
             messageDisplay.append(thisChatLi)
@@ -161,4 +141,5 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       }
     })
+
 })
