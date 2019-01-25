@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
   signupForm.addEventListener("submit", e => {
     e.preventDefault();
     userName = e.target.user.value
+    
     let language = e.target.lang.value
     fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
