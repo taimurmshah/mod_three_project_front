@@ -1,8 +1,8 @@
-function showMessages(message, div) {
+function showMessages(chat, div) {
   let chatsButton = document.createElement("button")
   let br = document.createElement("br")
-  chatsButton.innerText = message.subject
-  chatsButton.dataset.id = message.id
+  chatsButton.innerText = chat.subject
+  chatsButton.dataset.id = chat.id
   chatsButton.className = "chat-button"
   div.append(chatsButton)
   div.append(br)
@@ -14,6 +14,23 @@ function fetchMessages(div) {
     .then(data => {
       data.forEach(e => showMessages(e, div))
     })
+  }
+
+  function addNewMessage(message, messageDisplay, userId) {
+    let thisChatDiv = document.createElement("div")
+    let thisChatSpan = document.createElement("span")
+    let thisChatP = document.createElement("p")
+    let thisChatLi = document.createElement("li")
+    thisChatLi.className = "message-li";
+    thisChatDiv.className = "message-container";
+    if (message.user_id === userId) {
+      thisChatDiv.classList = thisChatDiv.classList + " me";
+      thisChatLi.classList =  thisChatLi.classList + " self";
+    }
+    thisChatP.innerText = message.text
+    thisChatDiv.append(thisChatP)
+    thisChatLi.append(thisChatDiv)
+    messageDisplay.append(thisChatLi)
   }
 
 
@@ -33,29 +50,48 @@ document.addEventListener("DOMContentLoaded", () => {
   let userLanguage;
   let currentChat;
   let currentChatMessages;
+  let messageDisplay;
 
   function openConnection() {
     return new WebSocket("ws://localhost:3000/cable")
   }
 
-  const chatWebSocket = openConnection()
-
-  chatWebSocket.onopen = (event) => {
-   const subscribeMsg = {
-     "command": "subscribe",
-     "identifier": "{\"channel\":\"MessagesChannel\", \"chat_room_id\": 5}"
-     }
-     chatWebSocket.send(JSON.stringify(subscribeMsg))
-   }
-
-
-  chatWebSocket.onmessage = event => {
-    const result = JSON.parse(event.data)
-    if(result.message && result.message.text) {
-      console.log(result.message.text)
-      // showMessages(result.text, chatsDiv)
+  functionalPage.addEventListener("submit", e => {
+    e.preventDefault()
+    // currentChat
+    // debugger
+    if (e.target.id === "text-box") {
+      text = e.target.msg.value
+      fetch("http://localhost:3000/api/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          text, user_id: userId, chat_room_id: currentChat.id
+        })
+      })
     }
-  }
+    const chatWebSocket = openConnection()
+    chatWebSocket.onopen = (event) => {
+      const subscribeMsg = {
+        "command": "subscribe",
+        "identifier": `{\"channel\":\"MessagesChannel\", \"chat_room_id\": ${currentChat.id}}`
+      }
+      chatWebSocket.send(JSON.stringify(subscribeMsg))
+    }
+    chatWebSocket.onmessage = event => {
+      const result = JSON.parse(event.data)
+      if(result.message && result.message.text) {
+        console.log(result.message.text)
+        addNewMessage(result.message, messageDisplay, userId)
+        // showMessages(result.message.text, chatsDiv)
+      }
+    }
+
+  })
+
+
 
   fetchMessages(chatsDiv)
 
@@ -113,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (document.getElementById("message-display")) {
             document.getElementById("message-display").remove();
           }
-          let messageDisplay = document.createElement('div')
+          messageDisplay = document.createElement('div')
           let messageHeader = document.createElement('h1')
           textBox = document.createElement('form');
           textBox.id = 'text-box';
@@ -124,22 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
           messageDisplay.append(messageHeader);
           messageDisplay.id = 'message-display'
           functionalPage.append(messageDisplay)
-          currentChatMessages.forEach(e => {
-            let thisChatDiv = document.createElement("div")
-            let thisChatSpan = document.createElement("span")
-            let thisChatP = document.createElement("p")
-            let thisChatLi = document.createElement("li")
-            thisChatLi.className = "message-li";
-            thisChatDiv.className = "message-container";
-            if (e.user_id === userId) {
-              thisChatDiv.classList = thisChatDiv.classList + " me";
-              thisChatLi.classList =  thisChatLi.classList + " self";
-            }
-            thisChatP.innerText = e.text
-            thisChatDiv.append(thisChatP)
-            thisChatLi.append(thisChatDiv)
-            messageDisplay.append(thisChatLi)
-          })
+          currentChatMessages.forEach( (el) => addNewMessage(el, messageDisplay, userId) )
         })
       }
     })
