@@ -50,9 +50,16 @@
   height: 50px;
   color: white;
   margin-top: 0px;
+  margin-bottom: 0px;
   background: #666;
   position: relative;
   overflow: hidden;
+}
+
+.message-divv {
+  height: 468px;
+  overflow: hidden;
+  overflow: scroll;
 }
 
 .message-li {
@@ -78,4 +85,8 @@ margin: 10px 0;
 .me {
 border-color: #ccc;
 background-color: #ddd;
+}
+
+.message-container p {
+max-width: 400px;
 }

@@ -151,6 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           messageDisplay = document.createElement('div')
           let messageHeader = document.createElement('h1')
+          messageDiv = document.createElement('div')
+          messageDiv.className = "message-divv"
           textBox = document.createElement('form');
           textBox.id = 'text-box';
           textBox.innerHTML = '<textarea class="message-text" placeholder="Type message.." name="msg"></textarea><button id="msg-submit" type="submit" class="btn">Send</button>'
@@ -159,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
           messageHeader.id = "message-header"
           messageDisplay.append(messageHeader);
           messageDisplay.id = 'message-display'
+          messageDisplay.append(messageDiv);
           functionalPage.append(messageDisplay)
           currentChatMessages.forEach( (el) => addNewMessage(el, messageDisplay, userId) )
         })
